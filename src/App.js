@@ -6,11 +6,29 @@ const ForbiddenSequenceApp = () => {
   const [showCaptcha, setShowCaptcha] = useState(false);
   const [captchaResolved, setCaptchaResolved] = useState(false);
   const [captchaMessage, setCaptchaMessage] = useState('');
-
+  const [currentIndex, setCurrentIndex] = useState(1); 
 
   const apiUrl = 'https://api.prod.jcloudify.com/whoami';
   const apiKey = process.env.REACT_APP_API_KEY;
 
+  const processSequence = async (start, end) => {
+    for (let i = start; i <= end; i++) {
+      try {
+        const response = await fetch(apiUrl);
+        const newItem = `${i}. Forbidden`;
+        setSequence((prevSequence) => [...prevSequence, newItem]);
+
+        if (response.status === 405) {
+          setShowCaptcha(true);
+          setCurrentIndex(i); 
+          break;
+        }
+        await new Promise((resolve) => setTimeout(resolve, 500));
+      } catch (error) {
+        console.error('Error during fetch:', error);
+      }
+    }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -22,27 +40,21 @@ const ForbiddenSequenceApp = () => {
     }
 
     setSequence([]);
-    for (let i = 1; i <= N; i++) {
-      try {
-        const response = await fetch( apiUrl);
-        const newItem = `${i}. Forbidden`;
-        setSequence((prevSequence) => [...prevSequence, newItem]);
-
-        if (response.status === 405 ) {
-          setShowCaptcha(true);
-          break;
-        }
-        await new Promise((resolve) => setTimeout(resolve, 500));
-      } catch (error) {
-        console.error('Error during fetch:', error);
-      }
-    }
+    setCaptchaMessage('');
+    setCaptchaResolved(false);
+    setShowCaptcha(false);
+    setCurrentIndex(1); 
+    await processSequence(1, N);
   };
 
-  const handleCaptchaSuccess = (wafToken) => {
+  const handleCaptchaSuccess = () => {
     setCaptchaResolved(true);
     setCaptchaMessage('CAPTCHA resolved! Sequence continues...');
     setShowCaptcha(false);
+
+    // Reprendre les requêtes restantes
+    const N = parseInt(number, 10);
+    processSequence(currentIndex, N);
   };
 
   const handleCaptchaError = (error) => {
