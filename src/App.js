@@ -73,7 +73,7 @@ const ForbiddenSequenceApp = () => {
             ref={(el) => {
               if (el && window.AwsWafCaptcha) {
                 window.AwsWafCaptcha.renderCaptcha(el, {
-                  apiKey: 'b82b1763d1c3',
+                  apiKey: '09bd26e5e726',
                   onSuccess: handleCaptchaSuccess,
                   onError: handleCaptchaError,
                 });
