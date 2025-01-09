@@ -9,6 +9,8 @@ const ForbiddenSequenceApp = () => {
 
 
   const apiUrl = 'https://api.prod.jcloudify.com/whoami';
+  const apiKey = process.env.REACT_APP_API_KEY;
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -73,7 +75,7 @@ const ForbiddenSequenceApp = () => {
             ref={(el) => {
               if (el && window.AwsWafCaptcha) {
                 window.AwsWafCaptcha.renderCaptcha(el, {
-                  apiKey: '09bd26e5e726',
+                  apiKey: apiKey,
                   onSuccess: handleCaptchaSuccess,
                   onError: handleCaptchaError,
                 });
